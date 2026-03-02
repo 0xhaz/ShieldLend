@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+contracts/target/
+frontend/.next/
+frontend/out/
+
+# Noir build artifacts
+circuits/target/
+circuits/proofs/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Starknet
+.starkli-wallets/

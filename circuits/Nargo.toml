@@ -1,0 +1,7 @@
+[package]
+name = "shieldlend_circuits"
+type = "bin"
+authors = ["ShieldLend Team"]
+compiler_version = ">=0.30.0"
+
+[dependencies]
