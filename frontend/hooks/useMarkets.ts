@@ -18,6 +18,13 @@ const SL_TOKENS = [
   process.env.NEXT_PUBLIC_SL_TOKEN_3 || "0x0",
 ];
 
+// Debt token addresses (borrow receipt tokens) — reads from .env.local
+const DEBT_TOKENS = [
+  process.env.NEXT_PUBLIC_DEBT_TOKEN_1 || "0x0",
+  process.env.NEXT_PUBLIC_DEBT_TOKEN_2 || "0x0",
+  process.env.NEXT_PUBLIC_DEBT_TOKEN_3 || "0x0",
+];
+
 // Static market configuration — pool addresses, token names, risk params
 const MARKET_CONFIGS: MarketInfo[] = [
   {
@@ -30,6 +37,7 @@ const MARKET_CONFIGS: MarketInfo[] = [
     isActive: true,
     isEMode: false,
     slTokenAddress: SL_TOKENS[0],
+    debtTokenAddress: DEBT_TOKENS[0],
   },
   {
     id: 2,
@@ -41,6 +49,7 @@ const MARKET_CONFIGS: MarketInfo[] = [
     isActive: true,
     isEMode: false,
     slTokenAddress: SL_TOKENS[1],
+    debtTokenAddress: DEBT_TOKENS[1],
   },
   {
     id: 3,
@@ -52,6 +61,7 @@ const MARKET_CONFIGS: MarketInfo[] = [
     isActive: true,
     isEMode: true,
     slTokenAddress: SL_TOKENS[2],
+    debtTokenAddress: DEBT_TOKENS[2],
   },
 ];
 
@@ -116,9 +126,10 @@ function parseMarketData(raw: string[], rateModelIdx: number): MarketData {
   const borrowRate = feltPairToU256(raw[6], raw[7]);
   const supplyRate = feltPairToU256(raw[8], raw[9]);
 
-  const borrowAPY = (Number(borrowRate) * SECONDS_PER_YEAR / RAY_F) * 100;
-  const supplyAPY = (Number(supplyRate) * SECONDS_PER_YEAR / RAY_F) * 100;
-  const utilizationRate = Number(utilBps) / 100; // BPS to %
+  const MAX_APY = 999; // Cap at 999% to prevent display of extreme values
+  const borrowAPY = Math.min((Number(borrowRate) * SECONDS_PER_YEAR / RAY_F) * 100, MAX_APY);
+  const supplyAPY = Math.min((Number(supplyRate) * SECONDS_PER_YEAR / RAY_F) * 100, MAX_APY);
+  const utilizationRate = Math.min(Number(utilBps) / 100, 100); // BPS to %, cap at 100%
 
   // Use fallback prices (oracle is mock — prices set at deploy time)
   const fallback = FALLBACK_DATA[rateModelIdx];

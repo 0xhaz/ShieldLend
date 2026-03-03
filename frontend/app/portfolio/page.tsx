@@ -45,6 +45,12 @@ export default function PortfolioPage() {
   const { balance: sl3Balance } = useTokenBalance(markets[2]?.slTokenAddress, address);
   const slBalances = [sl1Balance, sl2Balance, sl3Balance];
 
+  // Read debt token balances for transparent mode borrows
+  const { balance: dt1Balance } = useTokenBalance(markets[0]?.debtTokenAddress, address);
+  const { balance: dt2Balance } = useTokenBalance(markets[1]?.debtTokenAddress, address);
+  const { balance: dt3Balance } = useTokenBalance(markets[2]?.debtTokenAddress, address);
+  const debtBalances = [dt1Balance, dt2Balance, dt3Balance];
+
   // Build positions from actual data
   const positions = useMemo(() => {
     if (markets.length === 0) return [];
@@ -84,7 +90,8 @@ export default function PortfolioPage() {
         } else {
           // Transparent: SL token balance = deposit amount
           depositWei = slBalances[idx] ?? 0n;
-          // TODO: read debt token balance for transparent borrows
+          // Debt token balance = borrow amount (transparent mode)
+          borrowWei = debtBalances[idx] ?? 0n;
         }
 
         // Skip markets with no position
@@ -124,7 +131,7 @@ export default function PortfolioPage() {
         };
       })
       .filter((p): p is NonNullable<typeof p> => p !== null);
-  }, [markets, privacyMode, slBalances]);
+  }, [markets, privacyMode, slBalances, debtBalances]);
 
   // Summary totals
   const totals = useMemo(() => {

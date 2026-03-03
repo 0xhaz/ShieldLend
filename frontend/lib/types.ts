@@ -10,6 +10,7 @@ export interface MarketInfo {
   isActive: boolean;
   isEMode: boolean;
   slTokenAddress: string;
+  debtTokenAddress: string;
 }
 
 export interface RateModelParams {

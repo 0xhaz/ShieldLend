@@ -31,6 +31,10 @@ export default function LendPage() {
   const { balance: collateralBalance, formatted: collateralFormatted, refresh: refreshBalance } =
     useTokenBalance(collateralTokenAddr, address);
 
+  // Read SL token balance (deposit receipt) for withdraw max amount
+  const slTokenAddr = selectedMarket?.slTokenAddress;
+  const { formatted: slFormatted } = useTokenBalance(slTokenAddr, address);
+
   const handleMint = async () => {
     if (!selectedMarket) return;
     setMintStatus("pending");
@@ -248,7 +252,7 @@ export default function LendPage() {
               maxAmount={
                 privacyMode === "shielded" && depositNotes.length > 0
                   ? depositNotes[0].amount
-                  : "1.2"
+                  : slFormatted || "0"
               }
             />
 
