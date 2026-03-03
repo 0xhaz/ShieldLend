@@ -6,6 +6,7 @@ contracts/target/
 .next/
 frontend/.next/
 frontend/out/
+frontend/vercel.json
 
 # Noir build artifacts
 circuits/target/
