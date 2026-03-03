@@ -2,12 +2,8 @@
 // Stores shielded deposit and borrow notes
 // Based on Tornado Cash / Semaphore Merkle tree pattern adapted for Cairo
 
-use core::pedersen::pedersen;
-use shieldlend::utils::constants::MERKLE_TREE_DEPTH;
-use shieldlend::utils::errors::Errors;
-
 #[starknet::interface]
-trait ICommitmentStore<TContractState> {
+pub trait ICommitmentStore<TContractState> {
     /// Insert a new commitment into the Merkle tree
     fn insert(ref self: TContractState, commitment: felt252) -> u256; // returns leaf index
 
@@ -25,14 +21,12 @@ trait ICommitmentStore<TContractState> {
 }
 
 #[starknet::contract]
-mod CommitmentStore {
+pub mod CommitmentStore {
     use core::pedersen::pedersen;
     use starknet::storage::{
         Map, StorageMapReadAccess, StorageMapWriteAccess,
         StoragePointerReadAccess, StoragePointerWriteAccess,
     };
-    use super::Errors;
-
     const TREE_DEPTH: u32 = 20;
     const MAX_LEAVES: u256 = 1_048_576; // 2^20
 

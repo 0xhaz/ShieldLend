@@ -34,6 +34,7 @@ pub mod yield {
 pub mod tokens {
     pub mod sl_token;
     pub mod debt_token;
+    pub mod mock_erc20;
 }
 
 pub mod oracle {

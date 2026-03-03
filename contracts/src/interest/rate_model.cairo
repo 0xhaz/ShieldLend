@@ -4,12 +4,11 @@
 // rate = base_rate + slope1 * (utilization / optimal)           [below kink]
 // rate = base_rate + slope1 + slope2 * (util - optimal) / (1 - optimal)  [above kink]
 
-use starknet::ContractAddress;
 use shieldlend::utils::constants::{RAY, BPS, SECONDS_PER_YEAR};
-use shieldlend::utils::math::{ray_mul, ray_div};
+use shieldlend::utils::math::ray_mul;
 
 #[starknet::interface]
-trait IInterestRateModel<TContractState> {
+pub trait IInterestRateModel<TContractState> {
     fn get_borrow_rate(
         self: @TContractState,
         total_deposits: u256,
@@ -29,7 +28,7 @@ trait IInterestRateModel<TContractState> {
 #[starknet::contract]
 mod InterestRateModel {
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-    use super::{RAY, BPS, SECONDS_PER_YEAR, ray_mul, ray_div};
+    use super::{RAY, BPS, SECONDS_PER_YEAR, ray_mul};
 
     #[storage]
     struct Storage {

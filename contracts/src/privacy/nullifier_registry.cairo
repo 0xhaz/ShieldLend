@@ -5,7 +5,7 @@
 use shieldlend::utils::errors::Errors;
 
 #[starknet::interface]
-trait INullifierRegistry<TContractState> {
+pub trait INullifierRegistry<TContractState> {
     /// Check if a nullifier has been used
     fn is_spent(self: @TContractState, nullifier: felt252) -> bool;
 
@@ -17,7 +17,7 @@ trait INullifierRegistry<TContractState> {
 }
 
 #[starknet::contract]
-mod NullifierRegistry {
+pub mod NullifierRegistry {
     use starknet::{ContractAddress, get_caller_address};
     use starknet::storage::{
         Map, StorageMapReadAccess, StorageMapWriteAccess,
