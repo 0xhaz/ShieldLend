@@ -97,6 +97,7 @@ const FALLBACK_DATA: MarketData[] = [
 ];
 
 const RAY_F = 1e27; // rates from IRM are in RAY precision
+const SECONDS_PER_YEAR = 31_536_000; // 365 * 24 * 60 * 60
 
 /** Parse u256 from two felt hex strings (low, high) */
 function feltPairToU256(low: string, high: string): bigint {
@@ -115,8 +116,8 @@ function parseMarketData(raw: string[], rateModelIdx: number): MarketData {
   const borrowRate = feltPairToU256(raw[6], raw[7]);
   const supplyRate = feltPairToU256(raw[8], raw[9]);
 
-  const borrowAPY = (Number(borrowRate) / RAY_F) * 100;
-  const supplyAPY = (Number(supplyRate) / RAY_F) * 100;
+  const borrowAPY = (Number(borrowRate) * SECONDS_PER_YEAR / RAY_F) * 100;
+  const supplyAPY = (Number(supplyRate) * SECONDS_PER_YEAR / RAY_F) * 100;
   const utilizationRate = Number(utilBps) / 100; // BPS to %
 
   // Use fallback prices (oracle is mock — prices set at deploy time)
