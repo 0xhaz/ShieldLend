@@ -38,6 +38,10 @@ export default function BorrowPage() {
   const slTokenAddr = selectedMarket?.slTokenAddress;
   const { balance: slTokenBalance } = useTokenBalance(slTokenAddr, address);
 
+  // Read user's existing debt token balance (for health factor calculation)
+  const debtTokenAddr = selectedMarket?.debtTokenAddress;
+  const { balance: debtTokenBalance } = useTokenBalance(debtTokenAddr, address);
+
   const handleMint = async () => {
     if (!selectedMarket) return;
     setMintStatus("pending");
@@ -90,10 +94,32 @@ export default function BorrowPage() {
     return `${whole}.${frac.toString().padStart(2, "0")}`;
   }, [selectedMarket, privacyMode, depositNotes, slTokenBalance]);
 
-  // Simulated health factor based on input
-  const simulatedHF = borrowAmount
-    ? Math.max(0.5, 3.0 - Number(borrowAmount) * 0.8)
-    : Infinity;
+  // Health factor = (collateralUSD * liquidationThreshold) / (totalDebtUSD * 10000)
+  const simulatedHF = useMemo(() => {
+    if (!selectedMarket || !borrowAmount || Number(borrowAmount) === 0) return Infinity;
+
+    const { collateralPrice, loanPrice } = selectedMarket.data;
+    if (collateralPrice === 0n || loanPrice === 0n) return Infinity;
+
+    let collateralWei: bigint;
+    if (privacyMode === "shielded") {
+      collateralWei = depositNotes.reduce((sum, n) => sum + BigInt(n.amountWei), 0n);
+    } else {
+      collateralWei = slTokenBalance;
+    }
+
+    if (collateralWei === 0n) return 0;
+
+    // Convert to human-readable USD values
+    const collateralUSD = (Number(collateralWei) / 1e18) * (Number(collateralPrice) / 1e18);
+    const existingDebtUSD = (Number(debtTokenBalance) / 1e18) * (Number(loanPrice) / 1e18);
+    const newBorrowUSD = Number(borrowAmount) * (Number(loanPrice) / 1e18);
+    const totalDebtUSD = existingDebtUSD + newBorrowUSD;
+
+    if (totalDebtUSD <= 0) return Infinity;
+
+    return (collateralUSD * selectedMarket.liquidationThresholdBps) / (totalDebtUSD * 10000);
+  }, [selectedMarket, borrowAmount, privacyMode, depositNotes, slTokenBalance, debtTokenBalance]);
 
   return (
     <div className="max-w-lg mx-auto space-y-6">
