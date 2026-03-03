@@ -250,7 +250,7 @@ export default function PortfolioPage() {
                   <div>
                     <p className="text-xs text-gray-500 uppercase">Borrow APY</p>
                     <p className="text-orange-400 font-medium">
-                      {pos.borrowAPY > 0 ? `${pos.borrowAPY.toFixed(1)}%` : "\u2014"}
+                      {pos.borrowUSDRaw > 0n ? `${pos.borrowAPY.toFixed(1)}%` : "\u2014"}
                     </p>
                   </div>
                 </div>
